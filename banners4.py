@@ -1,60 +1,29 @@
-def min_operations(n, s, themes):
-    # Check for the length
-    if len(s) != n or any(len(t) != n for t in themes):
-        return -1
+n = int(input())
+word = input().strip()
 
-    # Check for lowercase English letters
-    if not all(c.islower() for c in s) or any(not all(c.islower() for c in t) for t in themes):
-        return -1
-    
-    # Check for the correct range of n
-    if not (1 <= n <= 100):
-        return -1
+if len(word) != n or not word.islower() or not word.isalpha():
+    print(-1)
+    exit()
 
-    
-    min_total_operations = float('inf')
+m = int(input())
+if m < 1 or m > 3: 
+    print(-1)
+    exit()
 
-    
-    for theme in themes:
-        total_operations = 0
-        final_s = list(s)  
-        
-        for i in range(n):
-            min_ops = float('inf')  
-            best_char = s[i] 
-            
-            forward_diff = (ord(theme[i]) - ord(s[i]) + 26) % 26
-            backward_diff = (ord(s[i]) - ord(theme[i]) + 26) % 26
-            
-            if forward_diff < min_ops:
-                min_ops = forward_diff
-                best_char = chr((ord(s[i]) - ord('a') + forward_diff) % 26 + ord('a'))  
+themes = [input().strip() for _ in range(m)]
+if any(len(theme) != n or not theme.islower() or not theme.isalpha() for theme in themes):
+    print(-1)
+    exit()
 
-            if backward_diff < min_ops:
-                min_ops = backward_diff
-                best_char = chr((ord(s[i]) - ord('a') - backward_diff + 26) % 26 + ord('a'))  
-            
-            
-            print(f"i: {i}, theme: {theme}, forward_diff: {forward_diff}, backward_diff: {backward_diff}, min_ops: {min_ops}, best_char: {best_char}")
-            
-            total_operations += min_ops 
-            final_s[i] = best_char
+if not (1 <= n <= 100):
+    print(-1)
+    exit()
 
-        
-        print(f"Total operations for theme '{theme}': {total_operations}")
-        min_total_operations = min(min_total_operations, total_operations)
+L = {chr(i + 97): i for i in range(26)}
+total_ops = []
 
-    
-    print(f"Minimum operations across all themes: {min_total_operations}")
-    return min_total_operations
+for theme in themes:
+    ops = [min((L[word[i]] - L[theme[i]]) % 26, (L[theme[i]] - L[word[i]]) % 26) for i in range(n)]
+    total_ops.append(sum(ops))
 
-
-# Input
-n = int(input())  
-s = input().strip() 
-m = int(input()) 
-themes = [input().strip() for i in range(m)]  
-
-
-result = min_operations(n, s, themes)
-print(result)
+print(min(total_ops))

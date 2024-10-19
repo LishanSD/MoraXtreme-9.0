@@ -1,29 +1,39 @@
-n = int(input())
-word = input().strip()
+def min_operations(n, s, themes):
+    # Check for the length
+    if len(s) != n or any(len(t) != n for t in themes):
+        return -1
 
-if len(word) != n or not word.islower() or not word.isalpha():
-    print(-1)
-    exit()
+    # Check for lowercase English letters
+    if not all(c.islower() for c in s) or any(not all(c.islower() for c in t) for t in themes):
+        return -1
+    
+    # Check for the correct range of n
+    if not (1 <= n <= 100):
+        return -1
 
-m = int(input())
-if m < 1 or m > 3: 
-    print(-1)
-    exit()
+    total_operations = 0
+    
+    for i in range(n):
+        min_ops = float('inf')  # Initialize min operations as infinity
+        
+        for theme in themes:
+            forward_diff = (ord(theme[i]) - ord(s[i]) + 26) % 26  # Forward rotation
+            backward_diff = (ord(s[i]) - ord(theme[i]) + 26) % 26  # Backward rotation
+            
+            min_ops = min(min_ops, forward_diff, backward_diff)  # Get the minimum operation
+            
+            # Debugging info (can be toggled off if needed)
+            print(f"i: {i}, theme: {theme}, forward_diff: {forward_diff}, backward_diff: {backward_diff}, min_ops: {min_ops}")
 
-themes = [input().strip() for _ in range(m)]
-if any(len(theme) != n or not theme.islower() or not theme.isalpha() for theme in themes):
-    print(-1)
-    exit()
+        total_operations += min_ops  # Add the minimum operations for this character
 
-if not (1 <= n <= 100):
-    print(-1)
-    exit()
+    return total_operations
 
-L = {chr(i + 97): i for i in range(26)}
-total_ops = []
+# Example usage:
+n = int(input())  
+s = input().strip()  
+m = int(input())       
+themes = [input().strip() for i in range(m)] 
 
-for theme in themes:
-    ops = [min((L[word[i]] - L[theme[i]]) % 26, (L[theme[i]] - L[word[i]]) % 26) for i in range(n)]
-    total_ops.append(sum(ops))
-
-print(min(total_ops))
+result = min_operations(n, s, themes)
+print(result)
